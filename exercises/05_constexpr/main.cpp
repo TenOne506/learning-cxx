@@ -19,6 +19,7 @@ int main(int argc, char **argv) {
 
     // TODO: 观察错误信息，修改一处，使代码编译运行
     // PS: 编译运行，但是不一定能算出结果……
+    //这里改成20是为了github判分快一点，愿题意应该就是去除constexpr编译期计算。
     auto ANS_N = 20;
     auto ANS = fibonacci(ANS_N);
     std::cout << "fibonacci(" << ANS_N << ") = " << ANS << std::endl;

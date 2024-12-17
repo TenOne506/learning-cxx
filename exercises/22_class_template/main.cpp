@@ -1,5 +1,5 @@
 ﻿#include "../exercise.h"
-
+#include <cstring>
 // READ: 类模板 <https://zh.cppreference.com/w/cpp/language/class_template>
 
 template<class T>
@@ -9,6 +9,10 @@ struct Tensor4D {
 
     Tensor4D(unsigned int const shape_[4], T const *data_) {
         unsigned int size = 1;
+        for(int i=0;i<4;++i){
+            shape[i] =shape_[i];
+            size *= shape_[i];
+        }
         // TODO: 填入正确的 shape 并计算 size
         data = new T[size];
         std::memcpy(data, data_, size * sizeof(T));
@@ -28,6 +32,54 @@ struct Tensor4D {
     // 则 `this` 与 `others` 相加时，3 个形状为 `[1, 2, 1, 4]` 的子张量各自与 `others` 对应项相加。
     Tensor4D &operator+=(Tensor4D const &others) {
         // TODO: 实现单向广播的加法
+        unsigned int size =1;
+        for(int i=0;i<4;++i){
+            size *= shape[i];
+        }
+        unsigned int indices[4] = {0, 0, 0, 0};
+        unsigned int others_indices[4] = {0, 0, 0, 0};
+
+        for (unsigned int i = 0; i < size; ++i) {
+
+
+            unsigned int temp = i;
+            for (int j = 3; j >= 0; --j) {
+                indices[j] = temp % this->shape[j];
+                temp /= this->shape[j];
+            }
+            // 计算 others 的索引
+            unsigned int other_idx = 0;
+            unsigned int multiplier = 1;
+            for (int j = 3; j >= 0; --j) {
+                if (others.shape[j] == 1) {
+                    // 如果 others 在该维度上的长度为 1，则忽略该维度
+                    continue;
+                }
+                other_idx += indices[j] * multiplier;
+                multiplier *= others.shape[j];
+            }
+
+            data[i] += others.data[other_idx];
+            // temp = i;
+            // for (int j = 3; j >= 0; --j) {
+            //     others_indices[j] = temp % others.shape[j];
+            //     temp /= others.shape[j];
+            // }
+            // //T other_value = others.data[0]
+            // int other_index = 1;
+            // int mul = 1;
+            // for (int j = 3; j >=0; --j) {
+            //     if (others.shape[j] != 1 && others.shape[j] != this->shape[j]) {
+            //         others_indices[j]=0;
+            //     }
+            //     other_index += others_indices[j]*mul;
+            //     mul *= others.shape[j];
+            // }
+
+            // // Now add the corresponding values
+            // data[i] += others.data[other_index];
+        }
+
         return *this;
     }
 };
